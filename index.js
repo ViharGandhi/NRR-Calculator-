@@ -117,6 +117,11 @@ if (TossResult === "Batting") {
   RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,points);
 } else if(TossResult=== "Bowling") {
   const RunsToChase = parseInt(prompt("Enter the Runs to chase: "));
+  if(isNaN(RunsToChase))
+  {
+    console.log("Invalid Input")
+    return;
+  }
   const teaminfo = PointsTableMap.get(YourTeam);
   if (!teaminfo) {
     console.log("Invalid team name(s) entered.");
