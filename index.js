@@ -81,37 +81,66 @@ const PointsTableMap = new Map([
 // Get user input
 const YourTeam = prompt("Enter Your Team name: ");
 const OppostionTeam = prompt("Enter Oppostion Team name: ");
-const Overs = parseFloat(prompt("Enter how many overs match: "));
-const DesiredPostion = parseInt(
-  prompt("Enter the desired position your team wants: ")
-);
+let Overs;
+let DesiredPostion;
+try {
+   Overs = parseFloat(prompt("Enter how many overs match: "));
+   DesiredPostion = parseInt(prompt("Enter the desired position your team wants: "));
+
+  if (isNaN(Overs) || isNaN(DesiredPostion)) {
+    console.log("Invalid Input")
+    return;
+  }
+ 
+
+  // Your further code logic here
+  
+} catch (e) {
+  console.log(e.message); // Output the error message
+}
+
 const TossResult = prompt("Enter Toss Result (Batting/Bowling): ");
 
 if (TossResult === "Batting") {
   const RunScored = parseInt(prompt("Enter the Runs Scored by your team: "));
   //Getting TeamInfo To see if it is already abvoe the desired postion or not
   const teaminfo = PointsTableMap.get(YourTeam);
+  if (!teaminfo) {
+    console.log("Invalid team name(s) entered.");
+    return;
+  }
   if (teaminfo.position <= DesiredPostion) {
     console.log(`You are alerady above  the desired postion`);
     return;
   }
   let points = teaminfo.points+2;
   RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,points);
-} else {
+} else if(TossResult=== "Bowling") {
   const RunsToChase = parseInt(prompt("Enter the Runs to chase: "));
   const teaminfo = PointsTableMap.get(YourTeam);
+  if (!teaminfo) {
+    console.log("Invalid team name(s) entered.");
+    return;
+  }
   if (teaminfo.position <= DesiredPostion) {
     console.log(`You are alerady above  the desired postion`);
     return;
   }
   let points = teaminfo.points+2;
   ChaseIn(YourTeam, OppostionTeam, DesiredPostion, RunsToChase, Overs,points);
+}else{
+  console.log("Invalid")
+  return;
 }
 
 function ChaseIn(YourTeam, OppostionTeam, DesiredPostion, RunsToChase, Overs,points) {
   //Getting Team Info of both the team
   let teamInfo1 = PointsTableMap.get(YourTeam);
   let teamInfo2 = PointsTableMap.get(OppostionTeam);
+  if (!teamInfo1 || !teamInfo2) {
+    console.log("Invalid team name(s) entered.");
+    return;
+  }
   //Checking if the Opponent team is as desired postion or not 
   if (teamInfo2.position != DesiredPostion) {
     for (const [key, value] of PointsTableMap) {
@@ -318,6 +347,10 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
   //Getting team info
   let teamInfo1 = PointsTableMap.get(YourTeam);
   let teamInfo2 = PointsTableMap.get(OppostionTeam);
+  if (!teamInfo1 || !teamInfo2) {
+    console.log("Invalid team name(s) entered.");
+    return;
+  }
   if (teamInfo2.position != DesiredPostion) {
     //Finding the opponent at desired postion
     for (const [key, value] of PointsTableMap) {
