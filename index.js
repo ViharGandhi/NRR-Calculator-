@@ -102,7 +102,8 @@ try {
 const TossResult = prompt("Enter Toss Result (Batting/Bowling): ");
 
 if (TossResult === "Batting") {
-  const RunScored = parseInt(prompt("Enter the Runs Scored by your team: "));
+  const RunScored = parseInt(prompt("Enter the Runs Scored by your team: "))-1;
+  
   //Getting TeamInfo To see if it is already abvoe the desired postion or not
   const teaminfo = PointsTableMap.get(YourTeam);
   if (!teaminfo) {
@@ -160,7 +161,7 @@ function ChaseIn(YourTeam, OppostionTeam, DesiredPostion, RunsToChase, Overs,poi
         }
         const team1forrun = teamInfo1.forRuns + RunsToChase;
         const team1forovers = teamInfo1.forOvers;
-        const team1againstrun = teamInfo1.againstRuns + RunsToChase - 1;
+        const team1againstrun = teamInfo1.againstRuns + RunsToChase-1;
         const team1againstover = teamInfo1.againstOvers + Overs;
         //Appling Binary Search for the case when Opponent team is not at desired postion
         let s = 0;
@@ -206,20 +207,30 @@ function ChaseIn(YourTeam, OppostionTeam, DesiredPostion, RunsToChase, Overs,poi
           }
           cnt++;
         }
+        let newans;
         if(ans)
         {
-
-        
+          
+          let targetednrr = (teamInfo2.nrr+0.001).toFixed(3);
+          if(teamInfo2.nrr  < teamInfo1.nrr)
+          {
+            targetednrr = teamInfo1.nrr;
+            
+            newans = calacjustaboveovernr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+          }else{
+            newans = calacjustaboveovernr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+          }
+         
         ans = parseFloat(ans);
         if (ans - Math.floor(ans) === 0.6) {
-          console.log(`${YourTeam} needs to chase ${RunsToChase} between 0 to ${ans.toFixed(1)} Overs`)
-          let nrr0 = nrrover(0,team1forrun,team1forovers,team1againstrun,team1againstover);
+          console.log(`${YourTeam} needs to chase ${RunsToChase} between ${newans.toFixed(1)} to ${ans.toFixed(1)} Overs`)
+          let nrr0 = nrrover(newans,team1forrun,team1forovers,team1againstrun,team1againstover);
           let nrr1 = nrrover(ans,team1forrun,team1forovers,team1againstrun,team1againstover);
           console.log(`${YourTeam} revised runrate will be from ${nrr1.toFixed(3)} to ${nrr0.toFixed(3)}`);
         } else {
           
-          console.log(`${YourTeam} needs to chase ${RunsToChase} between 0 to ${ans.toFixed(1)} Overs`)
-          let nrr0 = nrrover(0,team1forrun,team1forovers,team1againstrun,team1againstover);
+          console.log(`${YourTeam} needs to chase ${RunsToChase} between ${newans.toFixed(1)} to ${ans.toFixed(1)} Overs`)
+          let nrr0 = nrrover(newans,team1forrun,team1forovers,team1againstrun,team1againstover);
           let nrr1 = nrrover(ans,team1forrun,team1forovers,team1againstrun,team1againstover);
           console.log(`${YourTeam} revised runrate will be from ${nrr1.toFixed(3)} to ${nrr0.toFixed(3)}`);
 
@@ -238,9 +249,9 @@ function ChaseIn(YourTeam, OppostionTeam, DesiredPostion, RunsToChase, Overs,poi
    //This is when the opponent team is at desired postion
     const team1forrun = teamInfo1.forRuns + RunsToChase;
     const team1forovers = teamInfo1.forOvers;
-    const team1againstrun = teamInfo1.againstRuns+RunsToChase-1;
+    const team1againstrun = teamInfo1.againstRuns+RunsToChase;
     const team1againstover = teamInfo1.againstOvers + Overs;
-    const team2forrun = teamInfo2.forRuns+RunsToChase-1;
+    const team2forrun = teamInfo2.forRuns+RunsToChase;
     const team2forovers = teamInfo2.forOvers + Overs;
     const team2againstrun = teamInfo2.againstRuns + RunsToChase;
     const team2againstover = teamInfo2.againstOvers;
@@ -265,10 +276,20 @@ function ChaseIn(YourTeam, OppostionTeam, DesiredPostion, RunsToChase, Overs,poi
       console.log(`Your Team Currently cannot reach the desired postion`)
       return;
     }
+    let newans 
+    let targetednrr = (teamInfo2.nrr+0.001).toFixed(3);
+    if(teamInfo2.nrr  < teamInfo1.nrr)
+    {
+      targetednrr = teamInfo1.nrr;
+      newans = calacjustaboveovernr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+    }else{
+      newans = calacjustaboveovernr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+    }
     if(ans==Overs)
     {
-      console.log(`${YourTeam} needs to chase ${RunsToChase} between 0 to ${ans.toFixed(1)} Overs`)
-      let nrr0 = nrrover(0,team1forrun,team1forovers,team1againstrun,team1againstover);
+      
+      console.log(`${YourTeam} needs to chase ${RunsToChase} between ${newans.toFixed(1)} to ${ans.toFixed(1)} Overs`)
+      let nrr0 = nrrover(newans,team1forrun,team1forovers,team1againstrun,team1againstover);
       let nrr1 = nrrover(ans,team1forrun,team1forovers,team1againstrun,team1againstover);
       console.log(`${YourTeam} revised runrate will be from ${nrr1.toFixed(3)} to ${nrr0.toFixed(3)}`);
       return;
@@ -299,6 +320,32 @@ function ChaseIn(YourTeam, OppostionTeam, DesiredPostion, RunsToChase, Overs,poi
   }
 }
 // nrrover() function calacluates the revised nrr of the team
+function calacjustaboveovernr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+{
+    let tmp1 = targetednrr
+   let against = (team1againstrun/team1againstover);
+   targetednrr = (targetednrr+against);
+   let ans = Math.floor((team1forrun/targetednrr)-team1forovers);
+   let tmp = ans;
+   let cnt = 1;
+   while (cnt <= 6) {
+     tmp += 0.1;
+     if (
+      nrrover(
+         tmp,
+         team1forrun,
+         team1forovers,
+         team1againstrun,
+         team1againstover,
+         
+       ) >= tmp1
+     ) {
+       ans = tmp
+     }
+     cnt++;
+   }
+   return ans;
+}
 function nrrover(ans,team1run,team1over,team1againstun,team1againstover)
 {
   team1over+=ans;
@@ -366,7 +413,7 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
           console.log(`You just have to win this match to be at ${DesiredPostion} postion`)
           return;
         }
-        const team1forrun = teamInfo1.forRuns + RunScored;
+        const team1forrun = teamInfo1.forRuns + RunScored+1;
         const team1forovers = teamInfo1.forOvers + Overs;
         const team1againstrun = teamInfo1.againstRuns;
         const team1againstover = teamInfo1.againstOvers + Overs;
@@ -377,6 +424,7 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
         //Appling binary search to find the upper limit of runs which if conceded is okay
         let s = 0;
         let e = RunScored;
+        
         let ans2;
         while (s <= e) {
           let mid = Math.floor((s + e) / 2);
@@ -403,26 +451,41 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
           );
           return;
         }
-        const nrrupper = calaclautenrr3(
-          team1forrun,
-          team1forovers,
-          team1againstrun + 0,
-          team1againstover
-        );
-        const nrrlower = calaclautenrr3(
-          team1forrun,
-          team1forovers,
-          team1againstrun + ans2,
-          team1againstover
-        );
+        let newans;
+        if(ans2)
+        {
+          
+          let targetednrr = (teamInfo2.nrr+0.001).toFixed(3);
+          if(teamInfo2.nrr  < teamInfo1.nrr)
+          {
+            targetednrr = teamInfo1.nrr;
+            newans = calacjustabovenr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+          }else{
+            newans = calacjustabovenr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+          }
+          
+          const nrrupper = calaclautenrr3(
+            team1forrun,
+            team1forovers,
+            team1againstrun + newans,
+            team1againstover
+          );
+          const nrrlower = calaclautenrr3(
+            team1forrun,
+            team1forovers,
+            team1againstrun + ans2,
+            team1againstover
+          );
+          console.log(
+            `They need to restrist ${OppostionTeam} from ${newans} to ${ans2} in ${Overs} overs to get at ${DesiredPostion}`
+          );
+          console.log(
+            `Your Revised netrunrate will be from ${nrrlower.toFixed(3)} to ${nrrupper.toFixed(3)}`
+
+          );
+          return;
+        }
        
-        console.log(
-          `They need to restrist ${OppostionTeam} from 0 to ${ans2} in ${Overs} overs to get at ${DesiredPostion}`
-        );
-        console.log(
-          `Your Revised netrunrate will be from ${nrrlower.toFixed(3)} to ${nrrupper.toFixed(3)}`
-        );
-        return;
       }
     }
   }
@@ -440,13 +503,13 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
           return;
         }
     //When Our opponent is at desired postion 
-    const team1forrun = teamInfo1.forRuns + RunScored;
+    const team1forrun = teamInfo1.forRuns + RunScored+1;
     const team1forovers = teamInfo1.forOvers + Overs;
     const team1againstrun = teamInfo1.againstRuns;
     const team1againstover = teamInfo1.againstOvers + Overs;
     const team2forrun = teamInfo2.forRuns;
     const team2forovers = teamInfo2.forOvers + Overs;
-    const team2againstrun = teamInfo2.againstRuns + RunScored;
+    const team2againstrun = teamInfo2.againstRuns + RunScored+1;
     const team2againstover = teamInfo2.againstOvers + Overs;
     let s = 0;
     let e = RunScored;
@@ -473,10 +536,19 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
       }
     }
     if (ans2) {
+      let ans;
+      let targetednrr = (teamInfo2.nrr+0.001).toFixed(3);
+      if(teamInfo2.nrr  < teamInfo1.nrr)
+      {
+        targetednrr = teamInfo1.nrr;
+        ans = calacjustabovenr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+      }else{
+        ans = calacjustabovenr(team1forrun,team1forovers,team1againstrun,team1againstover,targetednrr)
+      }
       const nrrupper = calaclautenrr3(
         team1forrun,
         team1forovers,
-        team1againstrun + 0,
+        team1againstrun + ans,
         team1againstover
       );
       const nrrlower = calaclautenrr3(
@@ -486,7 +558,7 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
         team1againstover
       );
       console.log(
-        `They need to restrist ${OppostionTeam} from 0 to ${ans2} in ${Overs} overs to get at ${DesiredPostion}`
+        `They need to restrist ${OppostionTeam} from ${ans} to ${ans2} in ${Overs} overs to get at ${DesiredPostion}`
       );
       console.log(
         `Your Revised netrunrate will be from${nrrlower.toFixed(3)} to ${nrrupper.toFixed(3)}`
@@ -503,14 +575,33 @@ function RestrictIn(YourTeam, OppostionTeam, DesiredPostion, RunScored, Overs,po
 /*
 Below are the function which are used for comaprring and calaclating NRR 
 */
+function calacjustabovenr(Team1forrun,Team1Forover,Team1againstrun,Team1againstover,Targetednrr)
+{
+  
+   let made = ((Team1forrun/Team1Forover)).toFixed(3);
+   let ans = (made -  Targetednrr);
+   ans = (ans*Team1againstover);
+   ans = Math.round((ans-Team1againstrun).toFixed(3))
+   let val = calaclautenrr3(
+    Team1forrun,
+    Team1Forover,
+    Team1againstrun + ans,
+    Team1againstover
+)
+  
+  if(val.toFixed(3) < Targetednrr){
+  return ans-1;
+}
+   return ans;
+}
 function calaclautenrr3(Team1forrun, Team1forover, Team1againstrun, Team1againstover) {
   let made = Team1forrun / Team1forover;
   let against = Team1againstrun / Team1againstover;
   return made - against;
 }
 function calaclautenrr(mid, Team1forrun, Team1forover, Team1againstrun, Team1againstover, Team2forrun, Team2forover, Team2againstrun, Team2againstover) {
-  const nrr1 = Team1forrun / Team1forover - (Team1againstrun + mid) / Team1againstover;
-  const nrr2 = (Team2forrun+ mid) / Team2forover - Team2againstrun / Team2againstover;
+  const nrr1 = (Team1forrun / Team1forover) - ((Team1againstrun + mid) / Team1againstover);
+  const nrr2 = ((Team2forrun+ mid) / Team2forover) - (Team2againstrun / Team2againstover);
   return nrr1 - nrr2;
 }
 function calaclautenrr2(mid, Team1forrun, Team1forover, Team1againstrun, Team1againstover, Team2nrr) {
