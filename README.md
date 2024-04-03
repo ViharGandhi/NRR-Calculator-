@@ -2,4 +2,4 @@ This is a NRR calacluator which helps us determine that how much overs we should
 I have made the algorihtm by majorliy using Binary search algorithm and finding the upper limit/upper bound meaning the max we can go so that we can reach the ceratin postion 
 
 
-Here is the Demo Video Link https://youtu.be/wDUClw3lEjI
+
