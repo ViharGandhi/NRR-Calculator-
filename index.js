@@ -96,7 +96,13 @@ if(isNaN(Overs))
 }
 let DesiredPostion = parseInt(
   prompt("Enter the desired position your team wants: ")
+
 );
+if(DesiredPostion < 1)
+{
+  console.log(`Invalid Postion`)
+  return;
+}
 if(isNaN(DesiredPostion))
 {
   console.log(`Invalid Input`)
@@ -132,6 +138,11 @@ if (TossResult === "Batting") {
       if (value.position === DesiredPostion) {
         teaminfo2 = PointsTableMap.get(key);
       }
+    }
+    if(DesiredPostion >= teaminfo1.position)
+    {
+      console.log(`You are already higher than the desired postion `)
+      return;
     }
     let Lowerval;
     if(team===OppostionTeam)
@@ -262,6 +273,7 @@ if (TossResult === "Batting") {
   }
 }else if(TossResult==="Bowling")
 {
+  
   //Similary everthing is doen for bowling 
   /*
    In bowling we again use binary search but first we get the initeger over and then we try  to calculate for each ball 
@@ -273,6 +285,11 @@ if (TossResult === "Batting") {
       console.log(`Invalid`)
     }
     let teaminfo1 = PointsTableMap.get(YourTeam);
+    if(DesiredPostion >= teaminfo1.position)
+  {
+    console.log(`You are already higher than the desired postion `)
+    return;
+  }
     let teaminfo2 =  PointsTableMap.get(OppostionTeam);
     let team
     let reqnrr;
@@ -313,16 +330,18 @@ if (TossResult === "Batting") {
       }
       let team1forrun = teaminfo1.forRuns + RunsToChase;
       let team1forover = teaminfo1.forOvers;
+      let tmp =
+      ((teaminfo1.forOvers - Math.floor(teaminfo1.forOvers)).toFixed(1) * 10) / 6;
+      let modifiedteam1forover =  Math.floor(teaminfo1.forOvers) + tmp;
       let team1againstrun = teaminfo1.againstRuns+RunsToChase-1;
       tmp =
         ((teaminfo1.againstOvers - Math.floor(teaminfo1.againstOvers)).toFixed(1) *
           10) /
         6;
-       
       let team1againstover = Math.floor(teaminfo1.againstOvers) + tmp + Overs;
       let lowervalue = LowerlimitChaseIn(teaminfo1,RunsToChase,Overs,teaminfo2.nrr)
       let upperlimitnrr = CalaculateNrrWhileOvers(team1forrun,team1forover+highervalue,team1againstrun,team1againstover)
-      let lowerlimitnrr = CalaculateNrrWhileOvers(team1forrun,team1forover+lowervalue,team1againstrun,team1againstover);
+      let lowerlimitnrr = CalaculateNrrWhileOvers(team1forrun,modifiedteam1forover+lowervalue,team1againstrun,team1againstover);
       console.log(` ${YourTeam} need to chase ${RunsToChase} between ${highervalue} and ${lowervalue} Overs.`)
       console.log(`Revised NRR for ${YourTeam} will be between ${lowerlimitnrr.toFixed(3)} to ${upperlimitnrr.toFixed(3)}.`)
     }else{
@@ -528,7 +547,6 @@ function CalaculateNrrWhileOvers(team1forrun,team1forover,team1againstrun,team1a
   let tmp =
   ((team1forover - Math.floor(team1forover)).toFixed(1) * 10) / 6;
   team1forover = Math.floor(team1forover) + tmp;
- 
   let made = team1forrun/team1forover
   let against = team1againstrun/team1againstover
   return made-against
@@ -573,10 +591,12 @@ function LowerlimitChaseIn(teaminfo1,RuntoChase,Overs,nrr)
      tmp = tmp2+(cnt/10);
       if(CalaculateNrrWhileChasein2(tmp,team1forrun,team1forovers,team1againstrun,team1againstover) > nrr)
       {
+        
         ans = tmp
       }
       cnt++;
   }
+
   return ans;
 
 }
@@ -615,6 +635,7 @@ function UpperlimitChaseIn(teaminfo1,RuntoChase,reqnrr)
 }
 function CalaculateNrrWhileChasein2(tmp,team1forrun,team1forovers,team1againstrun,team1againstover)
 {
+  
   team1forovers+=tmp;
    mid =
   ((team1forovers - Math.floor(team1forovers)).toFixed(1) * 10) / 6;
